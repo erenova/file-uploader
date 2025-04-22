@@ -1,10 +1,10 @@
 const prisma = require("../utils/db");
 
-async function getTest(req, res) {
+async function getHome(req, res) {
   try {
-    const test = await prisma.test.findMany();
+    const test = await prisma.user.findMany();
     console.log(test);
-    res.send(test);
+    res.render("home");
   } catch (err) {
     console.error("Error creating test record:", err);
     res.status(500).send("Internal Server Error");
@@ -12,5 +12,5 @@ async function getTest(req, res) {
 }
 
 module.exports = {
-  getTest,
+  getHome,
 };
