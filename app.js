@@ -3,9 +3,10 @@ const expressSession = require("express-session");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const path = require("node:path");
 const home = require("./routes/home");
+const auth = require("./routes/auth");
+const dashboard = require("./routes/dashboard");
 const prisma = require("./utils/db");
 const passport = require("./config/passport");
-
 // Express Init
 const app = express();
 
@@ -36,9 +37,21 @@ app.use(
   }),
 );
 // Passport Auth
+app.use(passport.initialize());
 app.use(passport.session());
 // Routers
 app.use(home);
+app.use(auth);
+app.use(dashboard);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).render("error", {
+    message: err.message || "Something went wrong",
+    status: err.status || 500,
+  });
+});
 
 // Listener
 const PORT = 3000;

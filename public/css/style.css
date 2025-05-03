@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+html,
+body {
+  height: 100%;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 1rem;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[id="password"] {
+  margin-bottom: -1px;
+
+  border-radius: 0;
+}
+.form-signin input[id="passwordCheck"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+/*
+ * Globals
+ */
+
+/* Custom default button */
+.btn-light,
+.btn-light:hover,
+.btn-light:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritance from `body` */
+}
+
+.form-signin {
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 2rem;
+  background: white;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+}
+
+.form-signin {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

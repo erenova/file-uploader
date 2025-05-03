@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/bootstrap') %>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileSensei - Register</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <%- include('partials/background') %>
+
+    <main class="form-signin w-100 m-auto">
+      <form method="POST">
+        <a href="/">
+          <img
+            class="mb-4 drop-shadow-2xl"
+            src="../img/filesenseialt1.png"
+            alt=""
+            width="85px"
+          />
+        </a>
+        <h1 class="h4 mb-4 fw-bold">Create Your Account</h1>
+        <% if (locals.errors && locals.errors.length > 0) { %>
+        <div
+          class="mt-3 mb-3 p-2 py-3 bg-red-100 border border-red-400 text-red-700 rounded"
+        >
+          <ul class="list-disc list-inside flex flex-col gap-4">
+            <% errors.forEach(error => { %>
+            <li class=""><%= error.msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+        <% } %>
+        <div class="form-floating mb-3">
+          <input
+            type="email"
+            class="form-control"
+            id="floatingInput"
+            name="email"
+            placeholder="name@example.com"
+            required
+          />
+          <label for="floatingInput">Email address</label>
+          <div class="invalid-feedback">Please enter a valid email.</div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <label for="password">Password</label>
+          <div class="invalid-feedback">
+            Password must be at least 8 characters long.
+          </div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="passwordCheck"
+            name="passwordCheck"
+            placeholder="Retype Password"
+            required
+          />
+          <label for="passwordCheck">Re-type Password</label>
+          <div class="invalid-feedback">Passwords do not match.</div>
+        </div>
+
+        <button class="btn btn-primary w-100 py-2" type="submit">
+          Register
+        </button>
+
+        <p class="mt-3 text-center">
+          <span class="text-muted">Already have an account?</span>
+          <a href="/auth/login" class="fw-bold text-decoration-none">Log in</a>
+        </p>
+
+        <p class="mt-5 mb-3 text-body-secondary text-end">&copy; 2025</p>
+      </form>
+    </main>
+    <script
+      defer
+      src="../assets/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+    ></script>
+  </body>
+</html>
