@@ -1,11 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%- include('partials/bootstrap') %>
     <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>FileSensei - Home</title>
+    <link rel="stylesheet" href="../css/home.css" />
   </head>
-  <body>
-    DASHBOARD
+  <body class="bg-light text-dark">
+    <div class="d-flex" style="min-height: 100vh">
+      <!-- Sidebar -->
+      <nav
+        class="d-flex flex-column flex-shrink-0 p-3 bg-white border-end shadow-sm"
+        style="width: 250px"
+      >
+        <a
+          href="/"
+          class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
+        >
+          <img
+            src="/img/filesenseialt1.png"
+            alt="Logo"
+            width="40"
+            class="me-2"
+          />
+          <span class="fs-5 fw-semibold text-dark">
+            File<span class="glow-sensei">Sensei</span>
+          </span>
+        </a>
+        <hr />
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link active bg-primary text-white"
+              aria-current="page"
+              >Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/settings" class="nav-link text-dark">Settings</a>
+          </li>
+          <li>
+            <a href="/auth/logout" class="nav-link text-danger">Logout</a>
+          </li>
+        </ul>
+        <hr />
+        <small class="text-muted">Logged in as <strong>erenova</strong></small>
+      </nav>
+
+      <!-- Main content -->
+      <div class="flex-grow-1 p-4">
+        <div class="mb-4">
+          <h2 class="fw-bold">Your Files</h2>
+          <p class="text-muted">Drag and drop files below or click to browse</p>
+        </div>
+
+        <!-- Upload Area -->
+        <div
+          id="dropzone"
+          class="border-2 border-dashed border-gray-400 p-5 rounded-3 text-center cursor-pointer bg-white shadow-sm"
+        >
+          <p class="text-muted mb-0">
+            Drop files here or
+            <span class="text-primary fw-semibold">click to upload</span>
+          </p>
+          <form action="/upload" method="post" enctype="multipart/form-data">
+            <input
+              class="d-none"
+              type="file"
+              name="fileInput"
+              id="fileInput"
+              multiple
+            />
+          </form>
+        </div>
+        <%- include('partials/breadcrumb', { currentPath }) %>
+
+        <!-- Folder/File View -->
+        <div class="mt-5">
+          <h5 class="mb-3">Folders</h5>
+          <div class="d-flex flex-wrap gap-3">
+            <!-- Dummy folders -->
+            <div
+              class="bg-white p-3 rounded shadow-sm text-center"
+              style="width: 120px"
+            >
+              <img
+                src="/img/folder-icon.png"
+                alt="Folder"
+                width="50"
+                class="mb-2"
+              />
+              <p class="mb-0 text-truncate">Project A</p>
+            </div>
+            <div
+              class="bg-white p-3 rounded shadow-sm text-center"
+              style="width: 120px"
+            >
+              <img
+                src="/img/folder-icon.png"
+                alt="Folder"
+                width="50"
+                class="mb-2"
+              />
+              <p class="mb-0 text-truncate">Images</p>
+            </div>
+            <!-- Add more dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      const form = dropzone.querySelector("form");
+
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("border-primary");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("border-primary");
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("border-primary");
+        const files = e.dataTransfer.files;
+
+        const formData = new FormData();
+        for (let file of files) {
+          formData.append("fileInp", file);
+        }
+
+        fetch("/upload", {
+          method: "POST",
+          body: formData,
+        }).then(() => location.reload()); // Ideally use dynamic update instead
+      });
+    </script>
   </body>
 </html>

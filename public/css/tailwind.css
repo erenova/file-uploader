@@ -7,18 +7,15 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-red-50: oklch(97.1% 0.013 17.38);
     --color-red-100: oklch(93.6% 0.032 17.717);
-    --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-700: oklch(50.5% 0.213 27.518);
-    --color-red-800: oklch(44.4% 0.177 26.899);
     --color-cyan-600: oklch(60.9% 0.126 221.723);
     --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-violet-700: oklch(49.1% 0.27 292.581);
     --color-purple-600: oklch(55.8% 0.288 302.321);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
     --color-gray-800: oklch(27.8% 0.033 256.848);
-    --color-zinc-700: oklch(37% 0.013 285.805);
     --color-zinc-800: oklch(27.4% 0.006 286.033);
     --color-black: #000;
     --color-white: #fff;
@@ -29,15 +26,12 @@
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
-    --font-weight-medium: 500;
     --font-weight-bold: 700;
     --font-weight-extrabold: 800;
-    --radius-lg: 0.5rem;
-    --drop-shadow-md: 0 3px 3px rgb(0 0 0 / 0.12);
     --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
-    --drop-shadow-xl: 0 9px 7px rgb(0 0 0 / 0.1);
     --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-spin: spin 1s linear infinite;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -238,11 +232,11 @@
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
-  .top-1 {
-    top: calc(var(--spacing) * 1);
-  }
   .top-1\/2 {
     top: calc(1/2 * 100%);
+  }
+  .top-2\/4 {
+    top: calc(2/4 * 100%);
   }
   .top-50 {
     top: calc(var(--spacing) * 50);
@@ -262,6 +256,9 @@
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
+  .left-2\/4 {
+    left: calc(2/4 * 100%);
+  }
   .-z-10 {
     z-index: calc(10 * -1);
   }
@@ -279,6 +276,12 @@
   }
   .z-3 {
     z-index: 3;
+  }
+  .z-10 {
+    z-index: 10;
+  }
+  .z-20 {
+    z-index: 20;
   }
   .z-50 {
     z-index: 50;
@@ -577,6 +580,9 @@
   .h-screen {
     height: 100vh;
   }
+  .w-20 {
+    width: calc(var(--spacing) * 20);
+  }
   .w-25 {
     width: calc(var(--spacing) * 25);
   }
@@ -628,26 +634,33 @@
   .border-collapse {
     border-collapse: collapse;
   }
-  .translate-x-\[150\%\] {
-    --tw-translate-x: 150%;
+  .-translate-x-2\/4 {
+    --tw-translate-x: calc(calc(2/4 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
-  .-translate-y-1 {
-    --tw-translate-y: calc(var(--spacing) * -1);
+  .translate-x-\[150\%\] {
+    --tw-translate-x: 150%;
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .-translate-y-1\/2 {
     --tw-translate-y: calc(calc(1/2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .-translate-y-2\/4 {
+    --tw-translate-y: calc(calc(2/4 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
+  .animate-spin {
+    animation: var(--animate-spin);
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
   .resize {
     resize: both;
-  }
-  .list-inside {
-    list-style-position: inside;
   }
   .list-disc {
     list-style-type: disc;
@@ -687,9 +700,6 @@
   }
   .gap-5 {
     gap: calc(var(--spacing) * 5);
-  }
-  .gap-y-4 {
-    row-gap: calc(var(--spacing) * 4);
   }
   .self-center {
     align-self: center;
@@ -738,9 +748,6 @@
   .rounded {
     border-radius: 0.25rem;
   }
-  .rounded-lg {
-    border-radius: var(--radius-lg);
-  }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -769,11 +776,15 @@
     border-style: var(--tw-border-style);
     border-width: 5px;
   }
+  .border-dashed {
+    --tw-border-style: dashed;
+    border-style: dashed;
+  }
   .border-black {
     border-color: var(--color-black);
   }
-  .border-red-300 {
-    border-color: var(--color-red-300);
+  .border-gray-400 {
+    border-color: var(--color-gray-400);
   }
   .border-red-400 {
     border-color: var(--color-red-400);
@@ -784,8 +795,8 @@
   .bg-black {
     background-color: var(--color-black);
   }
-  .bg-red-50 {
-    background-color: var(--color-red-50);
+  .bg-gray-400 {
+    background-color: var(--color-gray-400);
   }
   .bg-red-100 {
     background-color: var(--color-red-100);
@@ -998,10 +1009,6 @@
     --tw-font-weight: var(--font-weight-extrabold);
     font-weight: var(--font-weight-extrabold);
   }
-  .font-medium {
-    --tw-font-weight: var(--font-weight-medium);
-    font-weight: var(--font-weight-medium);
-  }
   .text-nowrap {
     text-wrap: nowrap;
   }
@@ -1016,9 +1023,6 @@
   }
   .text-red-700 {
     color: var(--color-red-700);
-  }
-  .text-red-800 {
-    color: var(--color-red-800);
   }
   .text-transparent {
     color: transparent;
@@ -1150,11 +1154,6 @@
       }
     }
   }
-  .sm\:inline {
-    @media (width >= 40rem) {
-      display: inline;
-    }
-  }
 }
 html, body {
   height: 100%;
@@ -1202,6 +1201,19 @@ html, body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+.glow-sensei {
+  color: #94a1a5;
+  text-shadow: 0 0 2px rgba(150, 150, 150, 0.4), 0 0 6px rgba(180, 180, 180, 0.6), 0 0 12px rgba(200, 200, 200, 0.2);
+  animation: glowPulseSubtle 3s infinite ease-in-out;
+}
+@keyframes glowPulseSubtle {
+  0%, 100% {
+    text-shadow: 0 0 2px rgba(150, 150, 150, 0.4), 0 0 6px rgba(180, 180, 180, 0.6), 0 0 12px rgba(200, 200, 200, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 4px rgba(120, 120, 120, 0.6), 0 0 8px rgba(160, 160, 160, 0.5), 0 0 16px rgba(190, 190, 190, 0.3);
   }
 }
 @property --tw-translate-x {
@@ -1429,6 +1441,11 @@ html, body {
   syntax: "<percentage>";
   inherits: false;
   initial-value: 100%;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {

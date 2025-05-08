@@ -4,25 +4,13 @@
     <%- include('partials/bootstrap') %>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FileSensei - Login</title>
+    <title>Login | FileSensei</title>
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body class="d-flex align-items-center py-4 bg-body-tertiary">
     <%- include('partials/background') %>
 
     <main class="form-signin w-100 m-auto">
-      <% if (locals.errors && locals.errors.length > 0) { %>
-      <div
-        class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded"
-      >
-        <ul class="list-disc list-inside">
-          <% errors.forEach(error => { %>
-          <li><%= error.msg %></li>
-          <% }) %>
-        </ul>
-      </div>
-      <% } %>
-
       <form method="POST" action="">
         <a href="/">
           <img
@@ -35,6 +23,9 @@
 
         <h1 class="h4 mb-4 fw-bold">Welcome Back</h1>
 
+        <!-- Error -->
+        <%- include('partials/formError.ejs') %>
+
         <!-- Email -->
         <div class="form-floating mb-3">
           <input
@@ -44,6 +35,7 @@
             name="email"
             placeholder="name@example.com"
             value="<%= locals.oldInput?.email || '' %>"
+            required
           />
           <label for="email">Email address</label>
           <% if (locals.errors?.email) { %>
@@ -59,6 +51,7 @@
             id="password"
             name="password"
             placeholder="Password"
+            required
           />
           <label for="password">Password</label>
           <% if (locals.errors?.password) { %>

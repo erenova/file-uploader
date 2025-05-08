@@ -4,6 +4,7 @@ const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const path = require("node:path");
 const home = require("./routes/home");
 const auth = require("./routes/auth");
+const upload = require("./routes/upload");
 const dashboard = require("./routes/dashboard");
 const prisma = require("./utils/db");
 const passport = require("./config/passport");
@@ -43,6 +44,7 @@ app.use(passport.session());
 app.use(home);
 app.use(auth);
 app.use(dashboard);
+app.use(upload);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

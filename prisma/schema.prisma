@@ -20,13 +20,52 @@ model Session {
   expiresAt DateTime
 }
 
-model test {
-  id      Int    @id @default(autoincrement())
-  content String @db.VarChar(255)
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  Folder   Folder[]
+  File     File[]
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+model Folder {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdBy   User @relation(fields: [createdById], references: [id])
+  createdById Int
+
+  parentFolder   Folder? @relation("Subfolders", fields: [parentFolderId], references: [id])
+  parentFolderId String?
+
+  subfolders Folder[] @relation("Subfolders")
+
+  files File[]
+
+  isShared    Boolean   @default(false)
+  sharedUntil DateTime?
+}
+
+model File {
+  id         String   @id @default(uuid())
+  name       String
+  size       Int
+  url        String
+  mimeType   String
+  uploadedAt DateTime @default(now())
+
+  uploadedBy   User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedById Int
+
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String
+
+  isShared    Boolean   @default(false)
+  sharedUntil DateTime?
+
+  @@index([folderId])
+  @@index([uploadedById])
 }

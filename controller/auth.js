@@ -47,6 +47,7 @@ async function postRegister(req, res, next) {
   if (!errors.isEmpty()) {
     return res.status(400).render("register", {
       errors: errors.array(),
+      oldInput: req.body,
     });
   }
 
