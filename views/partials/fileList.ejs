@@ -1,0 +1,55 @@
+<% if (files.length === 0) { %>
+<p class="text-gray-500 italic">No files here yet.</p>
+<% } else { %>
+<div
+  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6"
+>
+  <% files.forEach(file => { %> <% if (file.folderId === locals.currentFolderId)
+  { %>
+  <div
+    class="item-card file-card bg-white shadow-md rounded-xl p-4 hover:shadow-lg transition group cursor-move relative min-h-[200px] flex flex-col"
+    data-type="file"
+    data-id="<%= file.id %>"
+    data-name="<%= file.name %>"
+    draggable="true"
+    ondragstart="handleDragStart(event)"
+  >
+    <div class="flex-1 flex flex-col items-center text-center">
+      <div class="h-32 flex items-center justify-center mb-2">
+        <% if (file.mimeType.startsWith("image/")) { %>
+        <img
+          src="<%= file.url %>"
+          alt="<%= file.name %>"
+          class="rounded-md max-h-full w-auto object-contain"
+          draggable="false"
+        />
+        <% } else { %>
+        <img
+          src="../img/fileIcon.png"
+          alt=""
+          class="rounded-md max-h-full w-auto object-contain"
+          draggable="false"
+        />
+        <% } %>
+      </div>
+      <div class="text-sm w-full">
+        <p class="font-medium truncate"><%= file.name %></p>
+        <p class="text-gray-400 text-xs">
+          <%= (file.size / 1024).toFixed(1) %> KB
+        </p>
+      </div>
+    </div>
+    <div class="mt-auto pt-2 text-center">
+      <a
+        href="<%= file.url %>"
+        download
+        class="inline-block text-indigo-600 text-xs font-medium hover:underline"
+        onclick="event.stopPropagation()"
+        >Download</a
+      >
+    </div>
+  </div>
+
+  <% } %> <% }) %>
+</div>
+<% } %>

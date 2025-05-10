@@ -61,6 +61,11 @@ async function postRegister(req, res, next) {
         password: hashedPassword,
       },
     });
+    req.session.notification = {
+      type: "success",
+      title: "Welcome to FileSensei!",
+      message: "Your account has been created successfully. Please log in.",
+    };
     return res.redirect("/auth/login");
   } catch (error) {
     return next(error);

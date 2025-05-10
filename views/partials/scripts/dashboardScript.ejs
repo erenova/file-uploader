@@ -1,0 +1,516 @@
+<script>
+  // File Upload Functionality
+  const dropzoneElement = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  let isUploading = false; // Flag to prevent multiple simultaneous uploads
+
+  // Single function to handle file uploads
+  async function uploadFiles(files) {
+    if (!files.length || isUploading) return;
+
+    isUploading = true;
+    const formData = new FormData();
+    const folderId =
+      document.querySelector('input[name="folderId"]')?.value || "";
+
+    formData.append("folderId", folderId);
+    for (let file of files) {
+      formData.append("file", file);
+    }
+
+    try {
+      await window.loadingManager.show("Preparing files...");
+      showNotification("info", "Uploading", "Files are being uploaded...");
+
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      showNotification("success", "Success", "Files uploaded successfully!");
+      await window.loadingManager.show("omm...");
+      setTimeout(() => location.reload(), 1000);
+    } catch (error) {
+      console.error("Upload error:", error);
+      showNotification(
+        "error",
+        "Error",
+        error.message || "Failed to upload files. Please try again.",
+      );
+      await window.loadingManager.hide();
+    } finally {
+      isUploading = false;
+    }
+  }
+
+  // Initialize file upload functionality
+  if (dropzoneElement && fileInput) {
+    // Handle click-to-upload
+    dropzoneElement.onclick = () => fileInput.click();
+
+    // Handle file input change
+    fileInput.onchange = (e) => uploadFiles(e.target.files);
+
+    // Handle drag and drop styling
+    dropzoneElement.ondragover = (e) => {
+      e.preventDefault();
+      dropzoneElement.classList.add("border-indigo-500", "bg-indigo-50");
+    };
+
+    dropzoneElement.ondragleave = () => {
+      dropzoneElement.classList.remove("border-indigo-500", "bg-indigo-50");
+    };
+
+    // Handle file drop
+    dropzoneElement.ondrop = (e) => {
+      e.preventDefault();
+      dropzoneElement.classList.remove("border-indigo-500", "bg-indigo-50");
+      uploadFiles(e.dataTransfer.files);
+    };
+  }
+
+  // Share folder functionality
+  async function shareFolder(folderId, event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    try {
+      // Initial loading state
+      await window.loadingManager.show("Initializing secure share...");
+      showNotification("info", "Sharing", "Generating share link...");
+
+      const response = await fetch(`/share/folder/${folderId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to share folder");
+
+      const data = await response.json();
+
+      // Artificial delay with multiple steps
+      await delay(400);
+      await window.loadingManager.show("Encoding the path of wisdom...");
+      await delay(600);
+
+      await window.loadingManager.show("ububu secure access...");
+      await delay(400);
+
+      await navigator.clipboard.writeText(
+        window.location.origin + data.shareUrl,
+      );
+      await delay(200);
+
+      await window.loadingManager.hide();
+      showNotification(
+        "success",
+        "Success",
+        "Copied. One path, one purpose — guide it to those you trust.",
+      );
+    } catch (error) {
+      showNotification(
+        "error",
+        "Error",
+        "Failed to share folder. Please try again.",
+      );
+      await window.loadingManager.hide();
+    }
+  }
+
+  // Mobile drawer functionality
+  const mobileDrawer = document.getElementById("mobileDrawer");
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  const drawerPanel = document.getElementById("drawerPanel");
+  const openBtn = document.getElementById("mobileMenuBtn");
+  const closeBtn = document.getElementById("closeDrawer");
+
+  function openDrawer() {
+    mobileDrawer.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+
+    requestAnimationFrame(() => {
+      drawerBackdrop.classList.add("opacity-100");
+      drawerBackdrop.classList.remove("opacity-0");
+      drawerPanel.classList.remove("-translate-x-full");
+      drawerPanel.classList.add("translate-x-0");
+    });
+  }
+
+  function closeDrawer() {
+    drawerBackdrop.classList.add("opacity-0");
+    drawerBackdrop.classList.remove("opacity-100");
+    drawerPanel.classList.add("-translate-x-full");
+    drawerPanel.classList.remove("translate-x-0");
+
+    setTimeout(() => {
+      mobileDrawer.classList.add("hidden");
+      document.body.classList.remove("overflow-hidden");
+    }, 300);
+  }
+
+  openBtn.addEventListener("click", openDrawer);
+  closeBtn.addEventListener("click", closeDrawer);
+  drawerBackdrop.addEventListener("click", closeDrawer);
+
+  // New Folder functionality
+  const formWrapper = document.getElementById("newFolderFormWrapper");
+  const newFolderBtn = document.getElementById("newFolderBtn");
+  const mobileNewFolderBtn = document.getElementById("mobileNewFolderBtn");
+  const cancelNewFolderBtn = document.getElementById("cancelNewFolder");
+
+  function showNewFolderForm() {
+    formWrapper.style.display = "block";
+    const formTextInp = formWrapper.querySelector('input[name="folderName"]');
+    formTextInp.focus();
+    formTextInp.value = "";
+  }
+
+  function hideNewFolderForm() {
+    formWrapper.style.display = "none";
+  }
+
+  if (newFolderBtn) {
+    newFolderBtn.addEventListener("click", showNewFolderForm);
+  }
+
+  if (mobileNewFolderBtn) {
+    mobileNewFolderBtn.addEventListener("click", () => {
+      showNewFolderForm();
+      formWrapper.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
+  if (cancelNewFolderBtn) {
+    cancelNewFolderBtn.addEventListener("click", hideNewFolderForm);
+  }
+
+  // Handle folder creation form submission
+  const newFolderForm = formWrapper?.querySelector("form");
+  let isCreatingFolder = false;
+
+  if (newFolderForm) {
+    newFolderForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (isCreatingFolder) return; // Prevent multiple submissions
+      isCreatingFolder = true;
+
+      const formData = new FormData(newFolderForm);
+      await window.loadingManager.show("Creating new folder...");
+
+      try {
+        const response = await fetch("/folder/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            folderName: formData.get("folderName"),
+            parentFolderId: formData.get("parentFolderId"),
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to create folder");
+        }
+
+        showNotification(
+          "success",
+          "Folder Created",
+          "A new chamber has been carved in the dojo of files.",
+        );
+
+        // Hide the form
+        hideNewFolderForm();
+
+        // Show loading while page refreshes
+        await window.loadingManager.show("omm...");
+        setTimeout(() => location.reload(), 1000);
+      } catch (error) {
+        showNotification(
+          "error",
+          "Error",
+          "Failed to create folder. Please try again.",
+        );
+      } finally {
+        isCreatingFolder = false;
+        await window.loadingManager.hide();
+      }
+    });
+  }
+
+  // Drag and Drop functionality for files and folders
+  let draggedItem = null;
+  let touchTimeout = null;
+  let isTouchDragging = false;
+  const TOUCH_HOLD_DURATION = 500; // ms to trigger drag
+
+  // Helper function to get folder ID from element
+  function getFolderIdFromElement(element) {
+    const folderCard = element.closest('.item-card[data-type="folder"]');
+    return folderCard ? folderCard.dataset.id : null;
+  }
+
+  // Initialize drag and drop for all items
+  document.querySelectorAll(".item-card").forEach((item) => {
+    // Touch events for mobile
+    item.addEventListener(
+      "touchstart",
+      (e) => {
+        // Start timer for long press
+        touchTimeout = setTimeout(() => {
+          isTouchDragging = true;
+          item.classList.add("dragging");
+          draggedItem = item;
+
+          // Show visual feedback
+          item.style.opacity = "0.5";
+          item.style.transform = "scale(1.05)";
+
+          // Show drop indicators
+          showDropIndicators();
+
+          // Prevent context menu from showing
+          e.preventDefault();
+        }, TOUCH_HOLD_DURATION);
+      },
+      { passive: false },
+    );
+
+    item.addEventListener("touchmove", (e) => {
+      if (!isTouchDragging) {
+        clearTimeout(touchTimeout);
+        return;
+      }
+
+      e.preventDefault();
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      updateDropTargets(target);
+    });
+
+    item.addEventListener("touchend", async (e) => {
+      clearTimeout(touchTimeout);
+      if (!isTouchDragging) return;
+
+      e.preventDefault();
+      isTouchDragging = false;
+      item.classList.remove("dragging");
+      item.style.opacity = "";
+      item.style.transform = "";
+
+      const touch = e.changedTouches[0];
+      const dropTarget = document.elementFromPoint(
+        touch.clientX,
+        touch.clientY,
+      );
+      await handleDrop(dropTarget);
+
+      hideDropIndicators();
+    });
+
+    // Desktop drag events
+    item.addEventListener("dragstart", (e) => {
+      draggedItem = item;
+      e.dataTransfer.setData("text/plain", ""); // Required for Firefox
+      setTimeout(() => {
+        item.classList.add("dragging");
+        showDropIndicators();
+      }, 0);
+    });
+
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      hideDropIndicators();
+    });
+  });
+
+  // Function to show drop indicators
+  function showDropIndicators() {
+    // Add indicator for root area
+    const rootArea = document.getElementById("rootDropArea");
+    if (rootArea) {
+      rootArea.classList.add("root-drop-target");
+    }
+
+    // Add indicators for folders
+    document
+      .querySelectorAll('.item-card[data-type="folder"]')
+      .forEach((folder) => {
+        if (folder !== draggedItem) {
+          folder.classList.add("potential-drop-target");
+        }
+      });
+  }
+
+  // Function to hide drop indicators
+  function hideDropIndicators() {
+    document
+      .getElementById("rootDropArea")
+      ?.classList.remove("root-drop-target");
+    document.querySelectorAll(".potential-drop-target").forEach((el) => {
+      el.classList.remove("potential-drop-target");
+    });
+    document.querySelectorAll(".drag-over").forEach((el) => {
+      el.classList.remove("drag-over");
+    });
+    draggedItem = null;
+  }
+
+  // Function to update drop targets
+  function updateDropTargets(target) {
+    // Remove previous drag-over states
+    document.querySelectorAll(".drag-over").forEach((el) => {
+      el.classList.remove("drag-over");
+    });
+
+    // Check if target is root area
+    const rootArea = document.getElementById("rootDropArea");
+    if (rootArea?.contains(target) && !target.closest(".item-card")) {
+      rootArea.classList.add("drag-over");
+      return;
+    }
+
+    // Check if target is a folder
+    const folderTarget = target?.closest('.item-card[data-type="folder"]');
+    if (folderTarget && folderTarget !== draggedItem) {
+      folderTarget.classList.add("drag-over");
+    }
+  }
+
+  // Function to handle drop
+  async function handleDrop(target) {
+    const rootArea = document.getElementById("rootDropArea");
+    const isRootDrop =
+      rootArea?.contains(target) && !target.closest(".item-card");
+    const folderTarget = target?.closest('.item-card[data-type="folder"]');
+
+    if (isRootDrop) {
+      // Move to root (null folderId)
+      await moveItemToFolder(
+        draggedItem.dataset.type,
+        draggedItem.dataset.id,
+        null,
+      );
+    } else if (folderTarget && folderTarget !== draggedItem) {
+      // Move to folder
+      await moveItemToFolder(
+        draggedItem.dataset.type,
+        draggedItem.dataset.id,
+        folderTarget.dataset.id,
+      );
+    }
+  }
+
+  // Handle drops on folders
+  document
+    .querySelectorAll('.item-card[data-type="folder"]')
+    .forEach((folder) => {
+      folder.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        if (folder !== draggedItem) {
+          folder.classList.add("drag-over");
+        }
+      });
+
+      folder.addEventListener("dragleave", () => {
+        folder.classList.remove("drag-over");
+      });
+
+      folder.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        await handleDrop(folder);
+      });
+    });
+
+  // Handle drops on root area
+  const rootArea = document.getElementById("rootDropArea");
+  if (rootArea) {
+    rootArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (!e.target.closest(".item-card")) {
+        rootArea.classList.add("drag-over");
+      }
+    });
+
+    rootArea.addEventListener("dragleave", (e) => {
+      if (!e.relatedTarget?.closest("#rootDropArea")) {
+        rootArea.classList.remove("drag-over");
+      }
+    });
+
+    rootArea.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      if (!e.target.closest(".item-card")) {
+        await handleDrop(rootArea);
+      }
+    });
+  }
+
+  // Function to move item to folder
+  async function moveItemToFolder(itemType, itemId, targetFolderId) {
+    try {
+      window.loadingManager.show();
+      const response = await fetch(`/${itemType}/move/${itemId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ targetFolderId }),
+      });
+
+      if (!response.ok) throw new Error("Failed to move item");
+
+      showNotification(
+        "success",
+        "Success",
+        `${
+          itemType.charAt(0).toUpperCase() + itemType.slice(1)
+        } moved successfully`,
+      );
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      console.error("Move failed:", error);
+      showNotification("error", "Error", "Failed to move item");
+    } finally {
+      window.loadingManager.hide();
+    }
+  }
+
+  // Add styles for drag and drop
+  const style = document.createElement("style");
+  style.textContent = `
+    .item-card.dragging {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+    .item-card.drag-over {
+      border: 2px dashed #4F46E5;
+      background-color: #EEF2FF;
+    }
+    .potential-drop-target {
+      transition: all 0.2s ease;
+    }
+    #rootDropArea.root-drop-target {
+      background-color: #F9FAFB;
+      transition: all 0.2s ease;
+    }
+    #rootDropArea.drag-over {
+      background-color: #EEF2FF;
+      outline: 2px dashed #4F46E5;
+      outline-offset: -2px;
+    }
+  `;
+  document.head.appendChild(style);
+</script>

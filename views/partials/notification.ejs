@@ -1,0 +1,65 @@
+<div
+  id="notification"
+  class="fixed md:top-24 top-20 right-4 z-50 min-w-[300px] p-4 rounded-xl shadow-lg transform transition-all duration-500 -translate-y-2 scale-95 opacity-0"
+>
+  <div class="flex items-center gap-3">
+    <img id="notificationImage" src="" alt="Sensei" class="w-10" />
+    <div>
+      <h3 id="notificationTitle" class="font-semibold text-sm"></h3>
+      <p id="notificationText" class="text-sm opacity-75"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showNotification(type, title, text) {
+    const notification = document.getElementById("notification");
+    const notificationImage = document.getElementById("notificationImage");
+    const notificationTitle = document.getElementById("notificationTitle");
+    const notificationText = document.getElementById("notificationText");
+
+    // Set content
+    notificationTitle.textContent = title;
+    notificationText.textContent = text;
+
+    // Set style based on type
+    if (type === "success") {
+      notification.className = notification.className.replace(
+        /bg-\w+-\d+/g,
+        "",
+      );
+      notification.classList.add("bg-green-50", "text-green-800");
+      notificationImage.src = "/img/senseiSuccess.png";
+    } else if (type === "error") {
+      notification.className = notification.className.replace(
+        /bg-\w+-\d+/g,
+        "",
+      );
+      notification.classList.add("bg-red-50", "text-red-800");
+      notificationImage.src = "/img/senseiError.png";
+    }
+
+    // Show notification
+    notification.classList.remove("-translate-y-2", "scale-95", "opacity-0");
+    notification.classList.add("translate-y-0", "scale-100", "opacity-100");
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove(
+        "translate-y-0",
+        "scale-100",
+        "opacity-100",
+      );
+      notification.classList.add("-translate-y-2", "scale-95", "opacity-0");
+    }, 3000);
+  }
+
+  // Show notification from session if exists
+  <% if (locals.notification) { %>
+    showNotification(
+      "<%= notification.type %>",
+      "<%= notification.title %>",
+      "<%= notification.message %>"
+    );
+  <% } %>
+</script>

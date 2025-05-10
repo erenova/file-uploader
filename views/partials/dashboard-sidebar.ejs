@@ -1,0 +1,125 @@
+<!-- Desktop Sidebar -->
+<aside
+  class="hidden md:flex bg-white shadow-lg w-64 p-6 flex-col justify-between border-r"
+>
+  <div>
+    <a href="/" class="flex items-center gap-2 mb-6">
+      <img src="/img/filesenseialt1.png" alt="Logo" class="w-8" />
+      <span class="text-xl font-semibold"
+        >File<span class="text-indigo-600">Sensei</span></span
+      >
+    </a>
+    <div class="mb-4">
+      <button
+        id="newFolderBtn"
+        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-xl font-semibold shadow-md hover:bg-indigo-700 transition-all duration-300 flex items-center justify-center gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        <span>New Folder</span>
+      </button>
+    </div>
+    <nav class="space-y-2">
+      <a
+        href="/dashboard"
+        class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+        >Dashboard</a
+      >
+      <a
+        href="/settings"
+        class="block px-3 py-2 rounded-md bg-indigo-600 text-white font-medium"
+        >Settings</a
+      >
+      <a
+        href="/auth/logout"
+        class="block px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
+        >Logout</a
+      >
+    </nav>
+  </div>
+  <p class="text-sm text-gray-500 mt-6">
+    Logged in as <strong><%= locals.user.email %></strong>
+  </p>
+</aside>
+
+<!-- Mobile Header -->
+<header class="md:hidden flex justify-between items-center p-4 bg-white shadow">
+  <a href="/" class="flex items-center gap-2">
+    <img src="/img/filesenseialt1.png" alt="Logo" class="w-8" />
+    <span class="text-xl font-semibold"
+      >File<span class="text-indigo-600">Sensei</span></span
+    >
+  </a>
+  <button id="mobileMenuBtn" class="text-gray-700 focus:outline-none">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M4 6h16M4 12h16M4 18h16"
+      />
+    </svg>
+  </button>
+</header>
+
+<!-- Mobile Drawer -->
+<div id="mobileDrawer" class="fixed inset-0 z-50 hidden">
+  <div
+    id="drawerBackdrop"
+    class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
+  ></div>
+  <div
+    id="drawerPanel"
+    class="absolute top-0 left-0 w-64 h-full bg-white transform -translate-x-full transition-transform duration-300 ease-in-out p-6 shadow-xl flex flex-col"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/img/filesenseialt1.png" alt="Logo" class="w-7" />
+        <span class="text-lg font-semibold"
+          >File<span class="text-indigo-600">Sensei</span></span
+        >
+      </a>
+      <button id="closeDrawer" class="text-gray-600">
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+    <nav class="space-y-4">
+      <a href="/dashboard" class="block text-gray-700">Dashboard</a>
+      <a href="/settings" class="block text-indigo-600 font-medium">Settings</a>
+      <a href="/auth/logout" class="block text-red-600">Logout</a>
+    </nav>
+    <hr class="my-4" />
+    <p class="text-sm text-gray-500 mt-auto">
+      Logged in as <strong><%= locals.user.email %></strong>
+    </p>
+  </div>
+</div>

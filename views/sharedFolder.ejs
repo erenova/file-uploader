@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/bootstrap') %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileSensei - Shared Folder</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Rubik", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Back button -->
+      <button
+        onclick="history.back()"
+        class="mb-4 text-gray-600 hover:text-gray-900 flex items-center gap-2"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
+        </svg>
+        Back
+      </button>
+
+      <!-- Header -->
+      <div class="flex items-center gap-3 mb-8">
+        <img src="/img/filesenseialt1.png" alt="Logo" class="w-10" />
+        <div>
+          <h1 class="text-2xl font-bold">Shared Folder: <%= folder.name %></h1>
+          <% if (folder.createdBy) { %>
+          <p class="text-gray-500">
+            Shared by <%= folder.createdBy.email %> on <%= new
+            Date(folder.createdAt).toLocaleDateString('en-US', { year:
+            'numeric', month: 'long', day: 'numeric' }) %>
+          </p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Breadcrumb -->
+      <% if (typeof breadcrumb !== 'undefined' && breadcrumb.length > 0) { %>
+      <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <% breadcrumb.forEach((item, index) => { %>
+          <li class="inline-flex items-center">
+            <% if (index > 0) { %>
+            <svg
+              class="w-3 h-3 text-gray-400 mx-1"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+            <% } %>
+            <a
+              href="/share/<%= shareId %>/folder/<%= item.id %>"
+              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600"
+            >
+              <%= item.name %>
+            </a>
+          </li>
+          <% }); %>
+        </ol>
+      </nav>
+      <% } %>
+
+      <!-- Folder Content -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <% if ((!files || files.length === 0) && (!subfolders ||
+        subfolders.length === 0)) { %>
+        <div class="text-center py-12">
+          <img
+            src="/img/senseiEmptyFolder.png"
+            alt="Empty folder"
+            class="w-24 mx-auto mb-4"
+          />
+          <p class="text-gray-500">This folder is empty</p>
+        </div>
+        <% } else { %>
+        <!-- Subfolders -->
+        <% if (subfolders && subfolders.length > 0) { %>
+        <div class="mb-8">
+          <h2 class="text-lg font-semibold mb-4">Folders</h2>
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+          >
+            <%- include('partials/sharedFolderList', { folders: subfolders,
+            shareId: shareId }) %>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Files -->
+        <% if (files && files.length > 0) { %>
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Files</h2>
+          <%- include('partials/sharedFileList', { files: files }) %>
+        </div>
+        <% } %> <% } %>
+      </div>
+    </div>
+  </body>
+</html>

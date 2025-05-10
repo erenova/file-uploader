@@ -5,7 +5,11 @@ const path = require("node:path");
 const home = require("./routes/home");
 const auth = require("./routes/auth");
 const upload = require("./routes/upload");
+const folder = require("./routes/folder");
+const fileRoute = require("./routes/file");
 const dashboard = require("./routes/dashboard");
+const share = require("./routes/share");
+const settings = require("./routes/settings");
 const prisma = require("./utils/db");
 const passport = require("./config/passport");
 // Express Init
@@ -37,6 +41,14 @@ app.use(
     }),
   }),
 );
+
+// Notification Middleware
+app.use((req, res, next) => {
+  res.locals.notification = req.session.notification;
+  delete req.session.notification;
+  next();
+});
+
 // Passport Auth
 app.use(passport.initialize());
 app.use(passport.session());
@@ -45,13 +57,24 @@ app.use(home);
 app.use(auth);
 app.use(dashboard);
 app.use(upload);
+app.use(folder);
+app.use(fileRoute);
+app.use("/share", share);
+app.use(settings);
+app.use("/share", require("./routes/share"));
+app.use(require("./routes/settings"));
 
-// Global Error Handler
+// 404 handler - must be after all other routes
+app.use((req, res, next) => {
+  res.status(404).render("404");
+});
+
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).render("error", {
-    message: err.message || "Something went wrong",
-    status: err.status || 500,
+  res.status(500).render("error", {
+    message: "Something broke!",
+    error: process.env.NODE_ENV === "development" ? err : {},
   });
 });
 

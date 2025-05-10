@@ -1,0 +1,20 @@
+<% folders.forEach(folder => { %>
+<div
+  class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all group"
+>
+  <a
+    href="/share/<%= shareId %>/folder/<%= folder.id %>"
+    class="block text-center"
+  >
+    <img src="/img/fileFolder.png" alt="Folder" class="w-12 mx-auto mb-2" />
+    <p class="truncate font-medium"><%= folder.name %></p>
+    <div class="text-xs text-gray-500 mt-1">
+      <span><%= folder.files?.length || 0 %> files</span>
+      <span class="mx-1">·</span>
+      <span
+        >Created <%= new Date(folder.createdAt).toLocaleDateString() %></span
+      >
+    </div>
+  </a>
+</div>
+<% }) %>

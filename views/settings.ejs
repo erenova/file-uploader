@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/bootstrap') %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileSensei - Settings</title>
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon" />
+    <%- include('partials/notification') %>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Rubik", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Mobile Nav -->
+    <header
+      class="md:hidden flex justify-between items-center p-4 bg-white shadow"
+    >
+      <a href="/" class="flex items-center gap-2">
+        <img src="/img/filesenseialt1.png" alt="Logo" class="w-8" />
+        <span class="text-xl font-semibold"
+          >File<span class="text-indigo-600">Sensei</span></span
+        >
+      </a>
+      <button id="mobileMenuBtn" class="text-gray-700 focus:outline-none">
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" class="fixed inset-0 z-50 hidden">
+      <!-- Backdrop -->
+      <div
+        id="drawerBackdrop"
+        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
+      ></div>
+
+      <!-- Drawer Panel -->
+      <div
+        id="drawerPanel"
+        class="absolute top-0 left-0 w-64 h-full bg-white transform -translate-x-full transition-transform duration-300 ease-in-out p-6 shadow-xl flex flex-col"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <a href="/" class="flex items-center gap-2">
+            <img src="/img/filesenseialt1.png" alt="Logo" class="w-7" />
+            <span class="text-lg font-semibold"
+              >File<span class="text-indigo-600">Sensei</span></span
+            >
+          </a>
+          <button id="closeDrawer" class="text-gray-600">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <nav class="space-y-4">
+          <a href="/" class="block text-gray-700">Dashboard</a>
+          <a href="/settings" class="block text-indigo-600 font-medium"
+            >Settings</a
+          >
+          <a href="/auth/logout" class="block text-red-600">Logout</a>
+        </nav>
+        <hr class="my-4" />
+        <p class="text-sm text-gray-500 mt-auto">
+          Logged in as <strong><%= locals.user.email %></strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="flex min-h-screen">
+      <!-- Desktop Sidebar -->
+      <aside
+        class="hidden md:flex bg-white shadow-lg w-64 p-6 flex-col justify-between border-r"
+      >
+        <div>
+          <a href="/" class="flex items-center gap-2 mb-6">
+            <img src="/img/filesenseialt1.png" alt="Logo" class="w-8" />
+            <span class="text-xl font-semibold"
+              >File<span class="text-indigo-600">Sensei</span></span
+            >
+          </a>
+          <nav class="space-y-2">
+            <a
+              href="/"
+              class="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+              >Dashboard</a
+            >
+            <a
+              href="/settings"
+              class="block px-3 py-2 rounded-md bg-indigo-600 text-white font-medium"
+              >Settings</a
+            >
+            <a
+              href="/auth/logout"
+              class="block px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
+              >Logout</a
+            >
+          </nav>
+        </div>
+        <p class="text-sm text-gray-500 mt-6">
+          Logged in as <strong><%= locals.user.email %></strong>
+        </p>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-6">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-2xl font-bold mb-8">Settings</h1>
+
+          <!-- Profile Settings -->
+          <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold">Profile Settings</h2>
+              <img
+                src="/img/senseiSettings.png"
+                alt="Sensei Settings"
+                class="w-16 drop-shadow-lg"
+              />
+            </div>
+            <form id="profileForm" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  name="email"
+                  value="<%= user.email %>"
+                  class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <button
+                type="submit"
+                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+              >
+                Save Changes
+              </button>
+            </form>
+          </div>
+
+          <!-- Active Shares -->
+          <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold">Active Shares</h2>
+              <img
+                src="/img/senseiSettings.png"
+                alt="Sensei Settings"
+                class="w-12 drop-shadow-lg opacity-50"
+              />
+            </div>
+            <div class="space-y-4">
+              <% if (shares.length === 0) { %>
+              <p class="text-gray-500">No active shares</p>
+              <% } else { %> <% shares.forEach(share => { %>
+              <div
+                class="flex items-center justify-between p-4 border rounded-lg"
+                data-share-id="<%= share.id %>"
+              >
+                <div>
+                  <p class="font-medium">
+                    <% if (share.file) { %> <%= share.file.name %> <% } else if
+                    (share.folder) { %> <%= share.folder.name %> <% } else { %>
+                    Deleted resource <% } %>
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    Shared <%= share.expiresAt ? `until ${new
+                    Date(share.expiresAt).toLocaleDateString()}` :
+                    'indefinitely' %>
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    Accessed <%= share.accessCount %> times
+                  </p>
+                </div>
+                <div class="flex items-center gap-4">
+                  <button
+                    onclick="copyShareLink('<%= share.id %>')"
+                    class="text-indigo-600 hover:text-indigo-700"
+                  >
+                    Copy Link
+                  </button>
+                  <button
+                    onclick="deleteShare('<%= share.id %>')"
+                    class="text-red-600 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+              <% }) %> <% } %>
+            </div>
+          </div>
+
+          <!-- Developer Info -->
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-semibold mb-4">About the Developer</h2>
+            <div class="flex items-start gap-6">
+              <img
+                src="/img/senseiDev.png"
+                alt="Developer"
+                class="w-24 h-24 rounded-full"
+              />
+              <div>
+                <h3 class="font-medium text-lg">Hi, I'm Eren! 👋</h3>
+                <p class="text-gray-600 mb-4">
+                  I'm a full-stack developer passionate about creating intuitive
+                  and efficient web applications. FileSensei is part of my
+                  portfolio showcasing modern web development practices.
+                </p>
+                <div class="flex gap-4">
+                  <a
+                    href="https://github.com/erenova"
+                    target="_blank"
+                    class="text-gray-700 hover:text-gray-900"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/erenova/"
+                    target="_blank"
+                    class="text-gray-700 hover:text-gray-900"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Mobile drawer functionality
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileDrawer = document.getElementById("mobileDrawer");
+      const drawerPanel = document.getElementById("drawerPanel");
+      const drawerBackdrop = document.getElementById("drawerBackdrop");
+      const closeDrawer = document.getElementById("closeDrawer");
+
+      function openDrawer() {
+        mobileDrawer.classList.remove("hidden");
+        setTimeout(() => {
+          drawerBackdrop.classList.add("opacity-100");
+          drawerPanel.classList.remove("-translate-x-full");
+        }, 10);
+      }
+
+      function closeDrawerFunc() {
+        drawerBackdrop.classList.remove("opacity-100");
+        drawerPanel.classList.add("-translate-x-full");
+        setTimeout(() => {
+          mobileDrawer.classList.add("hidden");
+        }, 300);
+      }
+
+      mobileMenuBtn.addEventListener("click", openDrawer);
+      closeDrawer.addEventListener("click", closeDrawerFunc);
+      drawerBackdrop.addEventListener("click", closeDrawerFunc);
+
+      // Profile form handling
+      document
+        .getElementById("profileForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const emailInput = e.target.querySelector('input[name="email"]');
+          const errorContainer = document.getElementById("emailError");
+
+          if (errorContainer) {
+            errorContainer.remove();
+          }
+
+          try {
+            const response = await fetch("/settings/update", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: formData.get("email"),
+              }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+              showNotification(
+                "success",
+                "Settings Updated",
+                "Your settings have been saved successfully.",
+              );
+            } else if (data.errors) {
+              // Create and show error message
+              const errorDiv = document.createElement("div");
+              errorDiv.id = "emailError";
+              errorDiv.className = "mt-2 text-sm text-red-600";
+              errorDiv.textContent = data.errors[0].msg;
+              emailInput.parentNode.appendChild(errorDiv);
+
+              // Add error styles to input
+              emailInput.classList.add("border-red-500", "focus:ring-red-500");
+
+              // Remove error styles after user starts typing
+              emailInput.addEventListener(
+                "input",
+                () => {
+                  errorDiv.remove();
+                  emailInput.classList.remove(
+                    "border-red-500",
+                    "focus:ring-red-500",
+                  );
+                },
+                { once: true },
+              );
+            } else {
+              throw new Error(data.error || "Failed to update settings");
+            }
+          } catch (error) {
+            showNotification(
+              "error",
+              "Update Failed",
+              "Failed to update settings. Please try again.",
+            );
+          }
+        });
+
+      // Share management
+      async function copyShareLink(shareId) {
+        const shareUrl = `${window.location.origin}/share/${shareId}`;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showNotification(
+            "success",
+            "Link Copied",
+            "Share link has been copied to clipboard",
+          );
+        } catch (error) {
+          showNotification(
+            "error",
+            "Copy Failed",
+            "Failed to copy link. Please try selecting and copying manually.",
+          );
+        }
+      }
+
+      // Add loading.js script
+      const script = document.createElement("script");
+      script.src = "/js/loading.js";
+      document.head.appendChild(script);
+
+      async function deleteShare(shareId) {
+        if (!confirm("Are you sure you want to delete this share?")) return;
+
+        window.loadingManager.show();
+
+        try {
+          const response = await fetch(`/share/${shareId}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            showNotification(
+              "success",
+              "Share Deleted",
+              "The share has been successfully deleted.",
+            );
+
+            // Fade out the share element
+            const shareElement = document.querySelector(
+              `[data-share-id="${shareId}"]`,
+            );
+            if (shareElement) {
+              shareElement.style.transition = "all 0.3s ease-out";
+              shareElement.style.opacity = "0";
+              shareElement.style.transform = "scale(0.95)";
+            }
+
+            // Wait for both minimum loading time and fade out
+            await Promise.all([
+              new Promise((resolve) => setTimeout(resolve, 300)), // Fade out duration
+              window.loadingManager.hide(),
+            ]);
+
+            // Remove element and reload if needed
+            if (shareElement) {
+              shareElement.remove();
+
+              // If no more shares, show the "No active shares" message
+              const sharesContainer = document.querySelector(".space-y-4");
+              if (
+                sharesContainer &&
+                !sharesContainer.querySelector("[data-share-id]")
+              ) {
+                sharesContainer.innerHTML =
+                  '<p class="text-gray-500">No active shares</p>';
+              }
+            }
+          } else {
+            throw new Error("Failed to delete share");
+          }
+        } catch (error) {
+          showNotification(
+            "error",
+            "Delete Failed",
+            "Failed to delete share. Please try again.",
+          );
+          await window.loadingManager.hide();
+        }
+      }
+    </script>
+  </body>
+</html>

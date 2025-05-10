@@ -1,0 +1,168 @@
+<div
+  id="deleteConfirmModal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+>
+  <div
+    class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md relative animate-fade-in-up"
+  >
+    <!-- Mascot image -->
+    <div class="flex justify-center mb-4">
+      <img
+        id="deleteModalImage"
+        src="/img/senseiDeleteFile.png"
+        alt="Sensei deleting"
+        class="w-28 h-auto drop-shadow-lg"
+      />
+    </div>
+
+    <!-- Title -->
+    <h2
+      id="deleteModalTitle"
+      class="text-xl font-bold text-gray-800 text-center mb-2"
+    >
+      Delete Item?
+    </h2>
+
+    <!-- Description -->
+    <p id="deleteModalText" class="text-sm text-gray-500 text-center mb-6">
+      Sensei is about to delete this item. Are you absolutely sure?
+    </p>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-4">
+      <button
+        id="cancelDelete"
+        class="px-5 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition"
+      >
+        Cancel
+      </button>
+      <form
+        id="confirmDeleteForm"
+        method="POST"
+        action=""
+        onsubmit="handleDelete(event)"
+      >
+        <button
+          type="submit"
+          id="confirmDeleteBtn"
+          class="px-5 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium transition flex items-center gap-2"
+        >
+          <span>Yes, Delete</span>
+          <div id="deleteSpinner" class="hidden">
+            <img
+              src="/img/senseiLoading.png"
+              alt="Loading"
+              class="w-5 h-5 animate-spin"
+            />
+          </div>
+        </button>
+      </form>
+
+      <script>
+        function updateDeleteModal(type, name) {
+          const image = document.getElementById("deleteModalImage");
+          const title = document.getElementById("deleteModalTitle");
+          const text = document.getElementById("deleteModalText");
+
+          if (type === "folder") {
+            image.src = "/img/senseiDeleteFolder.png";
+            title.textContent = "Send Folder to Eternity?";
+            text.textContent = `Sensei is about to send "${name}" folder to the eternal void. This action cannot be undone. Are you ready to let it go?`;
+          } else {
+            image.src = "/img/senseiDeleteFile.png";
+            title.textContent = "Shred this File?";
+            text.textContent = `Sensei is preparing to shred "${name}" into digital confetti. Once done, there's no going back. Shall we proceed?`;
+          }
+        }
+
+        async function handleDelete(e) {
+          e.preventDefault();
+          const form = e.target;
+          const deleteBtn = document.getElementById("confirmDeleteBtn");
+          const spinner = document.getElementById("deleteSpinner");
+          const btnText = deleteBtn.querySelector("span");
+
+          try {
+            // Show loading state
+            btnText.textContent = "Deleting...";
+            spinner.classList.remove("hidden");
+            deleteBtn.disabled = true;
+
+            const response = await fetch(form.action, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (response.ok) {
+              // Hide modal with fade out
+              const modal = document.getElementById("deleteConfirmModal");
+              modal.classList.add("opacity-0");
+              setTimeout(() => {
+                modal.classList.remove("flex");
+                modal.classList.add("hidden");
+                modal.classList.remove("opacity-0");
+
+                // Reset button state
+                btnText.textContent = "Yes, Delete";
+                spinner.classList.add("hidden");
+                deleteBtn.disabled = false;
+              }, 200);
+
+              // Show success notification
+              const itemType = form.action.includes("/folder/")
+                ? "folder"
+                : "file";
+              const itemName =
+                document.querySelector(
+                  `[data-id="${form.action.split("/").pop()}"]`,
+                )?.dataset?.name || itemType;
+
+              const successMessages = {
+                folder: "Folder has been sent to the eternal void",
+                file: "File has been shredded into digital confetti",
+              };
+
+              showNotification(
+                "success",
+                `${itemType === "folder" ? "Folder" : "File"} Deleted`,
+                `Sensei has ${successMessages[itemType]}: "${itemName}"`,
+              );
+
+              // Remove the element from DOM with fade out
+              const elementId = form.action.split("/").pop();
+              const element = document.querySelector(
+                `[data-id="${elementId}"]`,
+              );
+              if (element) {
+                element.style.transition = "all 0.3s ease-out";
+                element.style.opacity = "0";
+                element.style.transform = "scale(0.95)";
+                setTimeout(() => element.remove(), 300);
+              }
+            } else {
+              throw new Error("Delete failed");
+            }
+          } catch (error) {
+            // Reset button state
+            btnText.textContent = "Yes, Delete";
+            spinner.classList.add("hidden");
+            deleteBtn.disabled = false;
+
+            // Hide modal
+            const modal = document.getElementById("deleteConfirmModal");
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+
+            showNotification(
+              "error",
+              "Delete Failed",
+              "Sensei encountered an error while trying to delete. Please try again.",
+            );
+          }
+        }
+      </script>
+    </div>
+  </div>
+</div>

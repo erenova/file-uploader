@@ -13,17 +13,19 @@
     class="bg-light d-flex flex-column justify-content-center align-items-center vh-100 text-center px-3"
   >
     <!-- Mascot -->
-    <img src="../img/fileError.png" alt="Mascot" class="w-32 mb-4" />
+    <img src="../img/senseiError.png" alt="Mascot" class="w-32 mb-4" />
 
     <!-- Error Code -->
-    <h1 class="display-3 text-danger fw-bold mb-3">Error <%= status %></h1>
+    <h1 class="display-3 text-danger fw-bold mb-3">
+      Error <%= typeof status !== 'undefined' ? status : 500 %>
+    </h1>
 
     <!-- Error Message Box -->
     <div
       class="bg-white shadow-sm p-3 rounded text-start max-w-2xl w-full overflow-auto"
     >
       <pre class="whitespace-pre-wrap break-words text-danger-emphasis text-sm">
-<%= message %></pre
+<%= typeof message !== 'undefined' ? message : 'An unexpected error occurred' %></pre
       >
     </div>
 
@@ -41,7 +43,7 @@
 
     <!-- Footer -->
     <footer class="mt-5 text-muted small">
-      <p>Need help? Contact support or try refreshing the page.</p>
+      <p>Need help? Contact developer or try refreshing the page.</p>
     </footer>
   </body>
 </html>

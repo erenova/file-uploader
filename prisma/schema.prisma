@@ -24,8 +24,9 @@ model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
   password String
-  Folder   Folder[]
-  File     File[]
+  folders  Folder[]
+  files    File[]
+  shares   Share[]
 }
 
 model Folder {
@@ -38,15 +39,37 @@ model Folder {
   createdBy   User @relation(fields: [createdById], references: [id])
   createdById Int
 
-  parentFolder   Folder? @relation("Subfolders", fields: [parentFolderId], references: [id])
+  parentFolder   Folder? @relation("Subfolders", fields: [parentFolderId], references: [id], onDelete: Cascade)
   parentFolderId String?
 
   subfolders Folder[] @relation("Subfolders")
 
   files File[]
 
-  isShared    Boolean   @default(false)
-  sharedUntil DateTime?
+  // Share functionality
+  shares Share[]
+}
+
+model Share {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  accessCount Int       @default(0)
+
+  // The user who created the share
+  createdBy   User @relation(fields: [createdById], references: [id])
+  createdById Int
+
+  // The shared resource - either a file or folder
+  file   File?   @relation(fields: [fileId], references: [id])
+  fileId String?
+
+  folder   Folder? @relation(fields: [folderId], references: [id])
+  folderId String?
+
+  @@index([createdById])
+  @@index([fileId])
+  @@index([folderId])
 }
 
 model File {
@@ -60,11 +83,11 @@ model File {
   uploadedBy   User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
   uploadedById Int
 
-  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  folderId String
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String?
 
-  isShared    Boolean   @default(false)
-  sharedUntil DateTime?
+  // Share functionality
+  shares Share[]
 
   @@index([folderId])
   @@index([uploadedById])

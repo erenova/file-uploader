@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/bootstrap') %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileSensei - File Details</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Rubik", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <!-- Header with file icon and sensei mascot -->
+        <div class="flex items-center gap-4 mb-8">
+          <div class="relative">
+            <img src="/img/fileIcon.png" alt="File" class="w-16" />
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold"><%= file.name %></h1>
+            <p class="text-gray-500">
+              Uploaded by <%= file.uploadedBy.email %> on <%= new
+              Date(file.uploadedAt).toLocaleDateString('en-US', { year:
+              'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:
+              '2-digit' }) %>
+            </p>
+          </div>
+        </div>
+
+        <!-- File information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 class="text-lg font-semibold mb-4">File Information</h2>
+            <div class="space-y-3">
+              <div>
+                <span class="text-gray-500">Size:</span>
+                <span class="ml-2 font-medium">
+                  <%= (file.size / 1024 / 1024).toFixed(2) %> MB
+                </span>
+              </div>
+              <div>
+                <span class="text-gray-500">Type:</span>
+                <span class="ml-2 font-medium"><%= file.mimeType %></span>
+              </div>
+              <div>
+                <span class="text-gray-500">Location:</span>
+                <span class="ml-2 font-medium">
+                  <%= file.folder ? file.folder.name : 'Root' %>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-semibold mb-4">Actions</h2>
+            <div class="space-y-4">
+              <a
+                href="<%= file.url %>"
+                download="<%= file.name %>"
+                class="block w-full px-4 py-2 text-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              >
+                Download File
+              </a>
+              <button
+                onclick="history.back()"
+                class="block w-full px-4 py-2 text-center bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              >
+                Back to Files
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

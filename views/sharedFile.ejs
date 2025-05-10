@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/bootstrap') %>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileSensei - Shared File</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Rubik", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+      <!-- Back button -->
+      <button
+        onclick="history.back()"
+        class="mb-4 text-gray-600 hover:text-gray-900 flex items-center gap-2"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
+        </svg>
+        Back
+      </button>
+
+      <div class="bg-white rounded-2xl shadow-lg p-8">
+        <!-- Header with file icon -->
+        <div class="flex items-center gap-4 mb-8">
+          <div class="relative">
+            <% if (file.mimeType.startsWith("image/")) { %>
+            <img
+              src="<%= file.url %>"
+              alt="<%= file.name %>"
+              class="w-16 h-16 object-cover rounded-lg"
+            />
+            <% } else { %>
+            <img src="/img/fileIcon.png" alt="File" class="w-16" />
+            <% } %>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold"><%= file.name %></h1>
+            <p class="text-gray-500">
+              Shared by <%= file.uploadedBy.email %> on <%= new
+              Date(file.uploadedAt).toLocaleDateString('en-US', { year:
+              'numeric', month: 'long', day: 'numeric' }) %>
+            </p>
+          </div>
+        </div>
+
+        <!-- File information -->
+        <div class="space-y-4">
+          <div
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <span class="text-gray-600">Size</span>
+            <span class="font-medium"
+              ><%= (file.size / 1024).toFixed(1) %> KB</span
+            >
+          </div>
+          <div
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <span class="text-gray-600">Type</span>
+            <span class="font-medium"><%= file.mimeType %></span>
+          </div>
+        </div>
+
+        <!-- Download button -->
+        <div class="mt-8 flex justify-center">
+          <a
+            href="<%= file.url %>"
+            download
+            class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Download File
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
