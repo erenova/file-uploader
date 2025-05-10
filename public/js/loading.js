@@ -35,16 +35,18 @@ class LoadingManager {
         }
 
         const template = `
-          <div id="loading-overlay" class="w-full h-full bg-gray-400 opacity-0 fixed top-0 left-0 z-[9999] transition-all duration-300"></div>
-          <div id="loading-spinner" class="fixed top-2/4 left-2/4 z-[10000] -translate-x-2/4 -translate-y-2/4 opacity-0 scale-95 transition-all duration-300 flex flex-col items-center">
-            <img src="/img/senseiLoading.png" alt="Loading..." class="w-20 animate-spin" style="animation-duration: 1.2s;" />
-            ${
-              message
-                ? `<p id="loading-message" class="mt-4 text-gray-800 font-medium text-center">${message}</p>`
-                : ""
-            }
-          </div>
-        `;
+  <div id="loading-overlay" class="w-full h-full bg-gray-400 opacity-0 fixed top-0 left-0 z-[9999] transition-all duration-300"></div>
+  <div id="loading-spinner" class="fixed inset-0 z-[10000] flex items-center justify-center opacity-0 scale-95 transition-all duration-300">
+    <div class="flex flex-col items-center">
+      <img src="/img/senseiLoading.png" alt="Loading..." class="w-20 animate-spin" style="animation-duration: 1.2s;" />
+      ${
+        message
+          ? `<p id="loading-message" class="mt-4 text-gray-800 font-medium text-center">${message}</p>`
+          : ""
+      }
+    </div>
+  </div>
+`;
 
         const div = document.createElement("div");
         div.id = "loading-container";

@@ -33,8 +33,12 @@
   <div class="fixed inset-0 bg-gray-900 bg-opacity-50"></div>
   <div class="relative z-50 max-w-lg mx-auto mt-20 px-4">
     <div class="bg-white rounded-xl shadow-lg p-6">
+      <!-- Header -->
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-medium">Share <span id="shareName"></span></h3>
+        <h3 class="text-lg font-medium">
+          Share
+          <span id="shareName" class="font-semibold text-indigo-600"></span>
+        </h3>
         <button id="closeShare" class="text-gray-400 hover:text-gray-500">
           <svg
             class="h-6 w-6"
@@ -52,6 +56,16 @@
         </button>
       </div>
 
+      <!-- Mascot Image -->
+      <div class="flex justify-center items-center mb-6">
+        <img
+          src="/img/senseiShare.png"
+          alt="Sensei Share Mascot"
+          class="w-24"
+        />
+      </div>
+
+      <!-- Expiry Select -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Expire After</label
@@ -68,6 +82,7 @@
         </select>
       </div>
 
+      <!-- Share URL Display -->
       <div id="shareUrlContainer" class="hidden mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Share URL</label
@@ -88,6 +103,7 @@
         </div>
       </div>
 
+      <!-- Footer Buttons -->
       <div class="flex justify-end gap-2">
         <button
           id="cancelShare"
@@ -110,7 +126,7 @@
   const contextMenu = document.getElementById("itemContextMenu");
   const renameBtn = document.getElementById("renameItem");
   const deleteBtn = document.getElementById("deleteItem");
-  const deleteModal = document.getElementById("deleteConfirmModal"); // 🛠️ FIXED ID
+  const deleteModal = document.getElementById("deleteConfirmModal");
   const confirmDeleteForm = document.getElementById("confirmDeleteForm");
   const cancelDeleteBtn = document.getElementById("cancelDelete");
   const detailsBtn = document.getElementById("detailsItem");
@@ -126,7 +142,6 @@
     let longPressTimer;
     let hasMoved = false;
 
-    // Handle touch start
     card.addEventListener("touchstart", (e) => {
       hasMoved = false;
       longPressTimer = setTimeout(() => {
@@ -137,18 +152,15 @@
       }, 500);
     });
 
-    // Handle touch move
     card.addEventListener("touchmove", () => {
       hasMoved = true;
       clearTimeout(longPressTimer);
     });
 
-    // Handle touch end
     card.addEventListener("touchend", () => {
       clearTimeout(longPressTimer);
     });
 
-    // Handle right click for desktop
     card.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -162,25 +174,18 @@
     selectedItem.name = card.dataset.name;
     selectedItem.element = card;
 
-    // Show/hide buttons based on item type
     const shareBtn = document.getElementById("shareItem");
     const detailsBtn = document.getElementById("detailsItem");
 
-    if (shareBtn) {
-      shareBtn.style.display = "block"; // Show for both files and folders
-    }
-
-    if (detailsBtn) {
+    if (shareBtn) shareBtn.style.display = "block";
+    if (detailsBtn)
       detailsBtn.style.display =
         selectedItem.type === "file" ? "block" : "none";
-    }
 
-    // Position the context menu
     const rect = card.getBoundingClientRect();
     const x = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
     const y = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
 
-    // Ensure menu stays within viewport
     const menuWidth = contextMenu.offsetWidth;
     const menuHeight = contextMenu.offsetHeight;
     const windowWidth = window.innerWidth;
@@ -194,14 +199,12 @@
     contextMenu.classList.remove("hidden");
   }
 
-  // Close context menu when clicking outside
   document.addEventListener("click", (e) => {
     if (!contextMenu.contains(e.target)) {
       contextMenu.classList.add("hidden");
     }
   });
 
-  // Close context menu when touching outside
   document.addEventListener("touchstart", (e) => {
     if (!contextMenu.contains(e.target)) {
       contextMenu.classList.add("hidden");
@@ -246,16 +249,8 @@
 
   deleteBtn.addEventListener("click", () => {
     contextMenu.classList.add("hidden");
-    const deleteModal = document.getElementById("deleteConfirmModal");
-    const confirmDeleteForm = document.getElementById("confirmDeleteForm");
-
-    // Update modal content based on item type
     updateDeleteModal(selectedItem.type, selectedItem.name);
-
-    // Set form action with /delete endpoint
     confirmDeleteForm.action = `/${selectedItem.type}/delete/${selectedItem.id}`;
-
-    // Show modal
     deleteModal.classList.remove("hidden");
     deleteModal.classList.add("flex");
   });
@@ -288,18 +283,18 @@
     contextMenu.classList.add("hidden");
     shareName.textContent = selectedItem.name;
     shareUrlContainer.classList.add("hidden");
+    shareUrl.value = "";
     createShareBtn.classList.remove("hidden");
+    copyShareUrl.disabled = true;
     shareModal.classList.remove("hidden");
   });
 
-  // Close share modal on ESC key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !shareModal.classList.contains("hidden")) {
       shareModal.classList.add("hidden");
     }
   });
 
-  // Close share modal on overlay click
   const shareModalOverlay = shareModal.querySelector(
     ".fixed.inset-0.bg-gray-900",
   );
@@ -313,6 +308,13 @@
     btn.addEventListener("click", () => {
       shareModal.classList.add("hidden");
     });
+  });
+
+  shareExpiry.addEventListener("change", () => {
+    shareUrlContainer.classList.add("hidden");
+    shareUrl.value = "";
+    createShareBtn.classList.remove("hidden");
+    copyShareUrl.disabled = true;
   });
 
   createShareBtn.addEventListener("click", async () => {
@@ -337,17 +339,16 @@
 
       const data = await response.json();
 
-      // Add artificial delay with multiple steps
       await window.loadingManager.show("Encoding the path of wisdom...");
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       await window.loadingManager.show("Finalizing secret passage...");
       await new Promise((resolve) => setTimeout(resolve, 400));
 
-      // Show the share URL
       shareUrl.value = window.location.origin + "/share/" + data.share.id;
       shareUrlContainer.classList.remove("hidden");
       createShareBtn.classList.add("hidden");
+      copyShareUrl.disabled = false;
 
       await window.loadingManager.hide();
       showNotification(
@@ -356,7 +357,6 @@
         "A shareable scroll has been etched — deliver it wisely!",
       );
 
-      // Copy to clipboard
       copyShareUrl.addEventListener("click", () => {
         shareUrl.select();
         document.execCommand("copy");
