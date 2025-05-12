@@ -1,7 +1,8 @@
 const prisma = require("../utils/db");
 const path = require("path");
 const supabase = require("../utils/supabase");
-const fs = require("fs/promises");
+const fs = require("fs");
+const fsPromises = require("fs/promises");
 
 async function handleUpload(req, res) {
   try {
@@ -15,9 +16,8 @@ async function handleUpload(req, res) {
     const savedFiles = await Promise.all(
       files.map(async (file) => {
         try {
-          // Read the file from the temporary upload location
-          const fileBuffer = await fs.readFile(file.path);
           const filename = Date.now() + "-" + file.originalname;
+          const fileBuffer = await fsPromises.readFile(file.path);
 
           // Upload to Supabase
           const { data, error } = await supabase.storage
@@ -50,12 +50,12 @@ async function handleUpload(req, res) {
           });
 
           // Clean up temporary file
-          await fs.unlink(file.path);
+          await fsPromises.unlink(file.path);
 
           return savedFile;
         } catch (error) {
           // Clean up temporary file in case of error
-          await fs.unlink(file.path).catch(console.error);
+          await fsPromises.unlink(file.path).catch(console.error);
           throw error;
         }
       }),
@@ -67,7 +67,9 @@ async function handleUpload(req, res) {
     // Clean up any temporary files in case of error
     if (req.files) {
       await Promise.all(
-        req.files.map((file) => fs.unlink(file.path).catch(console.error)),
+        req.files.map((file) =>
+          fsPromises.unlink(file.path).catch(console.error),
+        ),
       );
     }
     res.status(500).json({ error: "Upload failed", details: err.message });

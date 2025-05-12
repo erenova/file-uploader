@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs/promises");
-const prisma = require("../utils/db"); // assuming this is your prisma client
+const prisma = require("../utils/db");
+const supabase = require("../utils/supabase");
 
 async function renameFile(req, res) {
   const { id } = req.params;
@@ -21,10 +22,39 @@ async function deleteFile(req, res) {
   const { id } = req.params;
 
   try {
+    // First get the file details from the database
+    const file = await prisma.file.findUnique({
+      where: { id },
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Delete from Supabase storage
+    const storagePath = `uploads/${new URL(file.url).pathname
+      .split("/")
+      .pop()}`;
+    console.log("Deleting from Supabase:", storagePath);
+
+    const { error: supabaseError } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .remove([storagePath]);
+
+    if (supabaseError) {
+      console.error("Supabase deletion error:", supabaseError);
+      return res
+        .status(500)
+        .json({ error: "Could not delete file from storage" });
+    }
+
+    // Delete from database
     await prisma.file.delete({ where: { id } });
-    res.redirect(req.get("referer"));
+
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).send("Could not delete file.");
+    console.error("File deletion error:", err);
+    res.status(500).json({ error: "Could not delete file" });
   }
 }
 

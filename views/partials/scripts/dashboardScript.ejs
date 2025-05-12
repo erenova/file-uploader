@@ -20,7 +20,7 @@
 
     try {
       await window.loadingManager.show("Preparing files...");
-      showNotification("info", "Uploading", "Files are being uploaded...");
+      showNotification("upload", "Uploading", "Files are being uploaded...");
 
       const response = await fetch("/upload", {
         method: "POST",
@@ -85,7 +85,7 @@
     try {
       // Initial loading state
       await window.loadingManager.show("Initializing secure share...");
-      showNotification("info", "Sharing", "Generating share link...");
+      showNotification("share", "Sharing", "Generating share link...");
 
       const response = await fetch(`/share/folder/${folderId}`, {
         method: "POST",
@@ -103,7 +103,7 @@
       await window.loadingManager.show("Encoding the path of wisdom...");
       await delay(600);
 
-      await window.loadingManager.show("ububu secure access...");
+      await window.loadingManager.show("securing access...");
       await delay(400);
 
       await navigator.clipboard.writeText(

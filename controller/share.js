@@ -84,6 +84,22 @@ async function getSharedResource(req, res) {
       });
     }
 
+    // Check if the resource still exists
+    if (
+      (!share.file && !share.folder) ||
+      (share.fileId && !share.file) ||
+      (share.folderId && !share.folder)
+    ) {
+      // Delete the orphaned share
+      await prisma.share.delete({
+        where: { id: shareId },
+      });
+      return res.status(410).render("error", {
+        message: "This resource has been deleted by its owner.",
+        error: { status: 410 },
+      });
+    }
+
     // Check if share has expired
     if (share.expiresAt && new Date() > share.expiresAt) {
       return res.status(410).render("error", {
@@ -206,8 +222,18 @@ async function getSharedFolder(req, res) {
       },
     });
 
+    // Check if share exists and has an associated folder
     if (!share || !share.folder) {
-      return res.status(404).render("404");
+      // If the share exists but folder is missing, clean up the orphaned share
+      if (share) {
+        await prisma.share.delete({
+          where: { id: shareId },
+        });
+      }
+      return res.status(410).render("error", {
+        message: "This folder has been deleted by its owner.",
+        error: { status: 410 },
+      });
     }
 
     // Check if share has expired
@@ -235,8 +261,12 @@ async function getSharedFolder(req, res) {
       },
     });
 
+    // If the requested folder doesn't exist anymore
     if (!requestedFolder) {
-      return res.status(404).render("404");
+      return res.status(410).render("error", {
+        message: "This folder has been deleted by its owner.",
+        error: { status: 410 },
+      });
     }
 
     // Function to check if folder is a descendant of the shared folder

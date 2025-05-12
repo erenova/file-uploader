@@ -38,6 +38,22 @@
       notification.classList.add("bg-red-50", "text-red-800");
       notificationImage.src = "/img/senseiError.png";
     }
+    else if (type === "upload") {
+      notification.className = notification.className.replace(
+        /bg-\w+-\d+/g,
+        "",
+      );
+      notification.classList.add("bg-amber-50", "text-amber-600");
+      notificationImage.src = "/img/senseiUpload.png";
+    }
+    else if (type === "share") {
+      notification.className = notification.className.replace(
+        /bg-\w+-\d+/g,
+        "",
+      );
+      notification.classList.add("bg-amber-50", "text-amber-600");
+      notificationImage.src = "/img/senseiUpload.png";
+    }
 
     // Show notification
     notification.classList.remove("-translate-y-2", "scale-95", "opacity-0");

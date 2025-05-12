@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node app.js --watch",
     "dev": "node --watch app.js",
     "build": "npx prisma generate && npx prisma db push",
     "tailwind": "npx @tailwindcss/cli -i ./public/css/style.css -o ./public/css/tailwind.css --watch"

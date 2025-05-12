@@ -61,11 +61,11 @@ model Share {
   createdBy   User @relation(fields: [createdById], references: [id])
   createdById Int
 
-  // The shared resource - either a file or folder
-  file   File?   @relation(fields: [fileId], references: [id])
+  // The shared resource - either a file or folder (with cascade delete)
+  file   File?   @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId String?
 
-  folder   Folder? @relation(fields: [folderId], references: [id])
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId String?
 
   @@index([createdById])
