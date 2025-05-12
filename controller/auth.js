@@ -73,28 +73,55 @@ async function postRegister(req, res, next) {
 }
 
 async function postLogin(req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).render("login", {
-      errors: errors.array(),
-      oldInput: req.body,
-    });
-  }
-
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) {
-      return res.status(401).render("login", {
-        errors: [{ msg: info.message }],
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("login", {
+        errors: errors.array(),
         oldInput: req.body,
       });
     }
 
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      return res.redirect("/dashboard");
-    });
-  })(req, res, next);
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        console.error("Login error:", err);
+        return next(err);
+      }
+
+      if (!user) {
+        return res.render("login", {
+          error: info.message,
+          oldInput: req.body,
+        });
+      }
+
+      req.logIn(user, (err) => {
+        if (err) {
+          console.error("Session error:", err);
+          return next(err);
+        }
+
+        // Set a flash message for successful login
+        req.session.notification = {
+          type: "success",
+          title: "Welcome back!",
+          message: "You have successfully logged in.",
+        };
+
+        // Save the session before redirecting
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+            return next(err);
+          }
+          res.redirect("/dashboard");
+        });
+      });
+    })(req, res, next);
+  } catch (error) {
+    console.error("Unexpected login error:", error);
+    next(error);
+  }
 }
 
 function getLogout(req, res, next) {

@@ -26,17 +26,24 @@ app.set("view engine", "ejs");
 // Set Public Folder
 app.use(express.static("public"));
 
+// Trust Railway's proxy
+app.set("trust proxy", 1);
+
 // Session Setup
 app.use(
   expressSession({
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // ms
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,
+      domain:
+        process.env.NODE_ENV === "production" ? ".railway.app" : undefined,
     },
     secret: process.env.SESSION_SECRET || "your-secret-key",
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000, //ms
       dbRecordIdIsSessionId: true,
@@ -45,16 +52,22 @@ app.use(
   }),
 );
 
+// Passport Auth
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Debug middleware
+if (process.env.NODE_ENV !== "production") {
+  const debugSession = require("./middleware/debugSession");
+  app.use(debugSession);
+}
+
 // Notification Middleware
 app.use((req, res, next) => {
   res.locals.notification = req.session.notification;
   delete req.session.notification;
   next();
 });
-
-// Passport Auth
-app.use(passport.initialize());
-app.use(passport.session());
 // Routers
 app.use(home);
 app.use(auth);
