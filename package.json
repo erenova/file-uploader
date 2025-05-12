@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js",
-    "build": "npx prisma generate && npx prisma migrate deploy",
+    "build": "npx prisma generate && npx prisma db push",
     "tailwind": "npx @tailwindcss/cli -i ./public/css/style.css -o ./public/css/tailwind.css --watch"
   },
   "keywords": [],
