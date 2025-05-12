@@ -24,7 +24,15 @@
         <!-- Header with file icon and sensei mascot -->
         <div class="flex items-center gap-4 mb-8">
           <div class="relative">
+            <% if (file.mimeType.startsWith("image/")) { %>
+            <img
+              src="/file/download/<%= file.id %>?preview=true"
+              alt="<%= file.name %>"
+              class="w-16 h-16 object-cover rounded-lg"
+            />
+            <% } else { %>
             <img src="/img/fileIcon.png" alt="File" class="w-16" />
+            <% } %>
           </div>
           <div>
             <h1 class="text-2xl font-bold"><%= file.name %></h1>
@@ -65,8 +73,7 @@
             <h2 class="text-lg font-semibold mb-4">Actions</h2>
             <div class="space-y-4">
               <a
-                href="<%= file.url %>"
-                download="<%= file.name %>"
+                href="/file/download/<%= file.id %>"
                 class="block w-full px-4 py-2 text-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
               >
                 Download File

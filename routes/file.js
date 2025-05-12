@@ -6,6 +6,7 @@ const prisma = require("../utils/db");
 
 router.post("/file/rename/:id", requireAuth, fileController.renameFile);
 router.post("/file/delete/:id", requireAuth, fileController.deleteFile);
+router.get("/file/download/:id", fileController.downloadFile);
 router.get("/file/details/:id", async (req, res) => {
   const file = await prisma.file.findUnique({
     where: { id: req.params.id },

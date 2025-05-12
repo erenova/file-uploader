@@ -47,7 +47,7 @@
           <div class="relative">
             <% if (file.mimeType.startsWith("image/")) { %>
             <img
-              src="<%= file.url %>"
+              src="/file/download/<%= file.id %>?preview=true"
               alt="<%= file.name %>"
               class="w-16 h-16 object-cover rounded-lg"
             />
@@ -86,8 +86,7 @@
         <!-- Download button -->
         <div class="mt-8 flex justify-center">
           <a
-            href="<%= file.url %>"
-            download
+            href="/file/download/<%= file.id %>"
             class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2"
           >
             <svg

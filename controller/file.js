@@ -92,9 +92,79 @@ async function moveFile(req, res) {
   }
 }
 
+async function downloadFile(req, res) {
+  const { id } = req.params;
+
+  try {
+    const file = await prisma.file.findUnique({
+      where: { id },
+      select: {
+        name: true,
+        url: true,
+        mimeType: true,
+        uploadedById: true,
+      },
+    });
+
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
+
+    // Get the file from Supabase
+    const supabase = require("../utils/supabase");
+    const bucketPath = new URL(file.url).pathname.split("/").pop();
+    const { data, error } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .download(`uploads/${bucketPath}`);
+
+    if (error) {
+      console.error("Supabase download error:", error);
+      return res.status(500).send("Error downloading file");
+    }
+
+    // Set content type
+    res.setHeader("Content-Type", file.mimeType);
+
+    // Check if this is a preview request (for image tags) or a download request
+    const isPreview =
+      req.query.preview === "true" && file.mimeType.startsWith("image/");
+
+    if (!isPreview) {
+      // Force download with proper filename
+      const encodedFilename = encodeURIComponent(file.name).replace(
+        /['()]/g,
+        escape,
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename*=UTF-8''${encodedFilename}`,
+      );
+    }
+
+    // Cache control headers
+    if (isPreview) {
+      // Allow browser to cache preview images
+      res.setHeader("Cache-Control", "public, max-age=3600");
+    } else {
+      // No caching for downloads
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+    }
+
+    // Stream the file to the response
+    const buffer = Buffer.from(await data.arrayBuffer());
+    res.send(buffer);
+  } catch (error) {
+    console.error("Download error:", error);
+    res.status(500).send("Error downloading file");
+  }
+}
+
 module.exports = {
   deleteFile,
   renameFile,
   getFileDetails,
   moveFile,
+  downloadFile,
 };

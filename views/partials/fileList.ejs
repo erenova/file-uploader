@@ -18,7 +18,7 @@
       <div class="h-32 flex items-center justify-center mb-2">
         <% if (file.mimeType.startsWith("image/")) { %>
         <img
-          src="<%= file.url %>"
+          src="/file/download/<%= file.id %>?preview=true"
           alt="<%= file.name %>"
           class="rounded-md max-h-full w-auto object-contain"
           draggable="false"
@@ -41,8 +41,7 @@
     </div>
     <div class="mt-auto pt-2 text-center">
       <a
-        href="<%= file.url %>"
-        download
+        href="/file/download/<%= file.id %>"
         class="inline-block text-indigo-600 text-xs font-medium hover:underline"
         onclick="event.stopPropagation()"
         >Download</a
