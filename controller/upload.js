@@ -1,5 +1,7 @@
 const prisma = require("../utils/db");
 const path = require("path");
+const supabase = require("../utils/supabase");
+const fs = require("fs/promises");
 
 async function handleUpload(req, res) {
   try {
@@ -11,23 +13,63 @@ async function handleUpload(req, res) {
     }
 
     const savedFiles = await Promise.all(
-      files.map((file) =>
-        prisma.file.create({
-          data: {
-            name: file.originalname,
-            size: file.size,
-            url: path.join("/uploads", file.filename),
-            mimeType: file.mimetype,
-            uploadedById: req.user.id,
-            folderId: folderId,
-          },
-        }),
-      ),
+      files.map(async (file) => {
+        try {
+          // Read the file from the temporary upload location
+          const fileBuffer = await fs.readFile(file.path);
+          const filename = Date.now() + "-" + file.originalname;
+
+          // Upload to Supabase
+          const { data, error } = await supabase.storage
+            .from(process.env.SUPABASE_BUCKET)
+            .upload(`uploads/${filename}`, fileBuffer, {
+              contentType: file.mimetype,
+              cacheControl: "3600",
+              upsert: false,
+            });
+
+          if (error) throw error;
+
+          // Get the public URL
+          const {
+            data: { publicUrl },
+          } = supabase.storage
+            .from(process.env.SUPABASE_BUCKET)
+            .getPublicUrl(`uploads/${filename}`);
+
+          // Save to database
+          const savedFile = await prisma.file.create({
+            data: {
+              name: file.originalname,
+              size: file.size,
+              url: publicUrl,
+              mimeType: file.mimetype,
+              uploadedById: req.user.id,
+              folderId: folderId,
+            },
+          });
+
+          // Clean up temporary file
+          await fs.unlink(file.path);
+
+          return savedFile;
+        } catch (error) {
+          // Clean up temporary file in case of error
+          await fs.unlink(file.path).catch(console.error);
+          throw error;
+        }
+      }),
     );
-    console.log("savedFiles ", savedFiles);
+
     res.json({ success: true, files: savedFiles });
   } catch (err) {
     console.error("Upload failed:", err);
+    // Clean up any temporary files in case of error
+    if (req.files) {
+      await Promise.all(
+        req.files.map((file) => fs.unlink(file.path).catch(console.error)),
+      );
+    }
     res.status(500).json({ error: "Upload failed", details: err.message });
   }
 }

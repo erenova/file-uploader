@@ -12,29 +12,18 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 const MAX_FILES = 10;
 
 const storage = multer.diskStorage({
-  destination: "public/uploads/",
+  destination: "uploads/", // Temporary storage
   filename: (req, file, cb) => {
-    // Check if file with this name already exists
-    let filename = file.originalname;
-    const ext = path.extname(filename);
-    const basename = path.basename(filename, ext);
-
-    // If file exists, append a counter
-    let counter = 1;
-    while (fs.existsSync(path.join("public/uploads/", filename))) {
-      filename = `${basename} (${counter})${ext}`;
-      counter++;
-    }
-
-    cb(null, filename);
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
   },
 });
 
 const upload = multer({
-  storage,
+  storage: storage,
   limits: {
-    fileSize: MAX_FILE_SIZE, // 100MB limit
-    files: MAX_FILES,
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+    files: 5, // Maximum 5 files
   },
 });
 
@@ -58,19 +47,6 @@ const handleMulterError = (err, req, res, next) => {
   next(err);
 };
 
-router.post(
-  "/upload",
-  requireAuth,
-  (req, res, next) => {
-    upload.array("file", MAX_FILES)(req, res, (err) => {
-      if (err) {
-        handleMulterError(err, req, res, next);
-      } else {
-        next();
-      }
-    });
-  },
-  handleUpload,
-);
+router.post("/upload", requireAuth, upload.array("files"), handleUpload);
 
 module.exports = router;

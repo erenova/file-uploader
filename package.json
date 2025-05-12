@@ -4,8 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node --watch app.js ",
-    "build": "npx prisma generate",
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "build": "npx prisma generate && npx prisma migrate deploy",
     "tailwind": "npx @tailwindcss/cli -i ./public/css/style.css -o ./public/css/tailwind.css --watch"
   },
   "keywords": [],
@@ -14,6 +15,7 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "@quixo3/prisma-session-store": "^3.1.13",
+    "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/cli": "^4.1.4",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
