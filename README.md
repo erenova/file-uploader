@@ -2,7 +2,7 @@
 
 ![FileSensei Logo](/public/img/fileSensei.png)
 
-FileSensei is a sophisticated file management system with a beautiful, user-friendly interface that combines modern design with powerful functionality. Built with Node.js and featuring real-time updates, drag-and-drop interactions, and secure file sharing capabilities.
+FileSensei is a file management system with a user-friendly interface that combines modern design with powerful functionality. Built with Node.js and featuring real-time updates, drag-and-drop interactions, and secure file sharing capabilities.
 
 ## 🔥 Key Features
 
